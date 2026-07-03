@@ -54,11 +54,16 @@ def answer(question: str, history: list[dict] | None = None, mode: str = "rerank
     resp = _llm().chat.completions.create(
         model=config.LLM_MODEL, messages=messages, temperature=0.2,
     )
+    text = resp.choices[0].message.content
+    # 第二道拒答防线: 有些无关问题 rerank 分数碰巧过了阈值, 但 LLM 按 system prompt
+    # 判断资料无关而拒答 — 此时 refused 标志也要为 True, 否则下游(工单系统)会误判
+    llm_refused = "未找到相关资料" in text
     return {
-        "answer": resp.choices[0].message.content,
-        "sources": [{"index": i + 1, "source": c["source"], "page": c["page"]}
+        "answer": text,
+        "sources": [] if llm_refused else
+                   [{"index": i + 1, "source": c["source"], "page": c["page"]}
                     for i, c in enumerate(chunks)],
-        "refused": False,
+        "refused": llm_refused,
     }
 
 
