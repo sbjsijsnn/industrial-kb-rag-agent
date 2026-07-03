@@ -1,0 +1,8 @@
+{"question": "S7-1200 的 ERROR 灯红色常亮怎么处理?", "expected_source": "sample_s71200_manual.md"}
+{"question": "RUN/STOP 指示灯黄色常亮是什么状态?", "expected_source": "sample_s71200_manual.md"}
+{"question": "如何给 S7-1200 设置 IP 地址?", "expected_source": "sample_s71200_manual.md"}
+{"question": "程序下载失败有哪些常见原因?", "expected_source": "sample_s71200_manual.md"}
+{"question": "存储卡有几种工作模式?", "expected_source": "sample_s71200_manual.md"}
+{"question": "模拟量读数跳变怎么排查?", "expected_source": "sample_s71200_manual.md"}
+{"question": "传送卡模式是什么意思?", "expected_source": "sample_s71200_manual.md"}
+{"question": "二线制和四线制变送器接线有什么区别?", "expected_source": "sample_s71200_manual.md"}
