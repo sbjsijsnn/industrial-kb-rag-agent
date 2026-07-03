@@ -35,6 +35,11 @@ def main():
     cases = [json.loads(line) for line in open(TESTSET, encoding="utf-8") if line.strip()]
     print(f"测试集: {len(cases)} 条\n")
 
+    # 预热: 首次调用要加载 embedding/reranker 模型和构建 BM25 索引 (~10s),
+    # 不预热的话这段时间会被算进第一条查询, 污染平均延迟
+    print("[warmup] 加载模型与索引...")
+    retrieve("预热查询", mode="rerank")
+
     print(f'{"mode":<10}{"Top-3命中率":<14}{"平均延迟(ms)":<12}')
     print("-" * 36)
     for mode in ["vector", "hybrid", "rerank"]:
