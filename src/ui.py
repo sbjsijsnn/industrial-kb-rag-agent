@@ -8,10 +8,14 @@ _agent = None
 
 
 def rag_respond(message, history):
-    hist = []
-    for user, bot in history:
-        hist += [{"role": "user", "content": user},
-                 {"role": "assistant", "content": bot}]
+    # Gradio 新版 (type="messages") 的 history 是 [{"role", "content"}] 字典列表
+    # (旧版是 (user, bot) 元组列表 — 用元组解包会在第二轮对话时崩溃)
+    hist = [
+        {"role": m["role"], "content": m["content"]}
+        for m in history
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant")
+        and isinstance(m.get("content"), str)
+    ]
     result = answer(message, history=hist)
     text = result["answer"]
     if result["sources"]:
@@ -41,7 +45,7 @@ with gr.Blocks(title="工业设备智能运维助手") as demo:
         ])
     with gr.Tab("🤖 运维 Agent (工具调用)"):
         gr.ChatInterface(agent_respond, examples=[
-            "E203 是什么故障? 这台设备之前出过类似问题吗?",
+            "G120 报 F0070 是什么故障? 之前修过类似的吗?",
             "查一下 S7-1200 的维修历史",
         ])
 
