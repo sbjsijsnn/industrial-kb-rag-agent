@@ -9,6 +9,7 @@ import json
 import sys
 
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pymilvus import DataType, MilvusClient
 from sentence_transformers import SentenceTransformer
@@ -17,26 +18,31 @@ from src import config
 
 
 def load_and_split() -> list[dict]:
-    """加载 data/raw 下所有 PDF, 切分为 chunk 列表。"""
+    """加载 data/raw 下所有 PDF/TXT/MD, 切分为 chunk 列表。"""
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=config.CHUNK_SIZE,
         chunk_overlap=config.CHUNK_OVERLAP,
         separators=["\n\n", "\n", "。", ";", " ", ""],  # 中文文档优先按段/句切
     )
     chunks = []
-    pdfs = sorted(config.DATA_RAW.glob("*.pdf"))
-    if not pdfs:
-        sys.exit(f"data/raw 下没有 PDF, 先放几份设备手册进去: {config.DATA_RAW}")
-    for pdf in pdfs:
-        print(f"[load] {pdf.name}")
-        docs = PyPDFLoader(str(pdf)).load()
+    files = sorted(p for p in config.DATA_RAW.iterdir()
+                   if p.suffix.lower() in (".pdf", ".txt", ".md"))
+    if not files:
+        sys.exit(f"data/raw 下没有文档, 先放几份设备手册进去: {config.DATA_RAW}")
+    for f in files:
+        print(f"[load] {f.name}")
+        if f.suffix.lower() == ".pdf":
+            docs = PyPDFLoader(str(f)).load()
+        else:
+            text = f.read_text(encoding="utf-8")
+            docs = [Document(page_content=text, metadata={"page": 0})]
         for piece in splitter.split_documents(docs):
             text = piece.page_content.strip()
             if len(text) < 30:  # 过滤目录页/页眉页脚碎片
                 continue
             chunks.append({
                 "text": text,
-                "source": pdf.name,
+                "source": f.name,
                 "page": piece.metadata.get("page", -1) + 1,  # 转 1-based 页码
             })
     print(f"[split] 共 {len(chunks)} 个 chunk (chunk_size={config.CHUNK_SIZE})")

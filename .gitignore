@@ -1,4 +1,5 @@
 .env
+STUDY_GUIDE.md
 __pycache__/
 *.pyc
 data/raw/*.pdf
