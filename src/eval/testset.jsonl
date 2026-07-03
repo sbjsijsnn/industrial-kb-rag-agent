@@ -1,8 +1,26 @@
-{"question": "S7-1200 的 ERROR 灯红色常亮怎么处理?", "expected_source": "sample_s71200_manual.md"}
-{"question": "RUN/STOP 指示灯黄色常亮是什么状态?", "expected_source": "sample_s71200_manual.md"}
-{"question": "如何给 S7-1200 设置 IP 地址?", "expected_source": "sample_s71200_manual.md"}
-{"question": "程序下载失败有哪些常见原因?", "expected_source": "sample_s71200_manual.md"}
-{"question": "存储卡有几种工作模式?", "expected_source": "sample_s71200_manual.md"}
-{"question": "模拟量读数跳变怎么排查?", "expected_source": "sample_s71200_manual.md"}
-{"question": "传送卡模式是什么意思?", "expected_source": "sample_s71200_manual.md"}
-{"question": "二线制和四线制变送器接线有什么区别?", "expected_source": "sample_s71200_manual.md"}
+{"question": "S7-1200 CPU 正面有哪几个状态指示灯?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 849}
+{"question": "S7-1200 的 ERROR 指示灯是什么颜色?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 850}
+{"question": "数字量信号模块的 I/O Channel LED 是什么颜色?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 851}
+{"question": "插入传送卡之前 CPU 必须处于什么模式?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 136}
+{"question": "V3.0 程序传送卡可以插入 S7-1200 V4.0 CPU 吗?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 136}
+{"question": "程序卡可以用作 CPU 的什么存储器?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 139}
+{"question": "S7-1200 CPU 出厂时有预组态的 IP 地址吗?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 145}
+{"question": "在线 CPU 在项目树的哪个入口可以显示或更改 IP 地址?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 855}
+{"question": "把 CPU 复位为出厂设置时怎样保留原有 IP 地址?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 856}
+{"question": "S7-1200 提供哪些 PID 指令?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 448}
+{"question": "硬件中断 OB 在什么情况下执行?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 89}
+{"question": "S7-1200 支持在 CPU 通电时热插拔中央机架上的模块吗?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 80}
+{"question": "S7-1200 固件更新有哪几种方法?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 140}
+{"question": "扫描周期超过最大周期时间会触发什么事件?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 90}
+{"question": "超出最大扫描周期时间时可以用什么指令复位循环定时器?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 99}
+{"question": "S7-1200 CPU 只支持什么样的存储卡?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 131}
+{"question": "S7-1200 CPU 的访问保护提供几个安全等级?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 200}
+{"question": "Modbus 串行链路超时时间内未收到数据报文,反相器会有什么反应?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 788}
+{"question": "S7-1200 时钟存储器各个位对应的周期分别是多少?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 106}
+{"question": "S7-1200 Web 服务器对浏览器的持续连接数有什么限制?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 717}
+{"question": "高速计数器频率测量模式的 NEW_PERIOD 参数可以设置哪些周期值?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 438}
+{"question": "插入存储卡会使 CPU 切换到什么模式?", "expected_source": "s71200_system_manual_zh.pdf", "expected_page": 136}
+{"question": "FX3U 可以安装在什么规格的 DIN 导轨上?", "expected_source": "fx3u_hardware_manual_zh.pdf", "expected_page": 4}
+{"question": "FX3U 的输入电流是多少?", "expected_source": "fx3u_hardware_manual_zh.pdf", "expected_page": 6}
+{"question": "FX3U 继电器输出 1 点的最大负载电流是多少?", "expected_source": "fx3u_hardware_manual_zh.pdf", "expected_page": 7}
+{"question": "FX3U 使用带串联二极管的输入设备时,串联二极管电压应设为多少以下?", "expected_source": "fx3u_hardware_manual_zh.pdf", "expected_page": 6}

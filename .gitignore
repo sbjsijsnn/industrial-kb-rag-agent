@@ -2,7 +2,7 @@
 STUDY_GUIDE.md
 __pycache__/
 *.pyc
-data/raw/*.pdf
+data/raw/**/*.pdf
 data/processed/
 deploy/volumes/
 .idea/

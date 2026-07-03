@@ -8,14 +8,27 @@
 向量化入库,工程师直接提问,得到**带手册页码引用**的答案;复合问题由 Agent 自主调用
 手册检索 / 故障码库 / 维修记录三个工具,多步推理后给出综合诊断。
 
+**语料**: 真实公开手册 — 西门子 S7-1200 系统手册中文版(1156 页)+ 三菱 FX3U 硬件手册(跨品牌干扰项)。
+故障码库含西门子 PLC/变频器、三菱 FX3U、发那科机器人共 16 个故障码 + 7 条维修记录。
+
 **架构**:
 
-```
-提问 → LangGraph Agent (ReAct 多步推理)
-          ├─ 工具1: search_manual   → 混合检索 (BM25+向量+RRF) → BGE-Reranker → 引用溯源
-          ├─ 工具2: query_fault_code → SQLite 故障码库
-          └─ 工具3: get_repair_history → 维修记录
-       → 带引用的答案 (无相关资料时拒答, 抑制幻觉)
+```mermaid
+flowchart TD
+    Q[工程师提问] --> A{LangGraph Agent<br/>ReAct 多步推理}
+    A -->|工具1| S[search_manual<br/>手册检索]
+    A -->|工具2| F[query_fault_code<br/>故障码库 SQLite]
+    A -->|工具3| H[get_repair_history<br/>维修记录]
+    S --> HY[混合检索<br/>BM25 + 向量 + RRF 融合]
+    HY --> RR[BGE-Reranker<br/>Cross-Encoder 重排]
+    RR -->|score < 阈值| REJ[拒答: 未找到相关资料]
+    RR -->|Top-3| GEN[LLM 生成<br/>带手册页码引用]
+    HY -.-> MV[(Milvus<br/>HNSW/COSINE)]
+    HY -.-> BM[(chunks.jsonl<br/>BM25 语料)]
+    F --> DB[(fault_codes.db)]
+    H --> DB
+    GEN --> OUT[结构化诊断输出<br/>Pydantic 校验]
+    REJ --> OUT
 ```
 
 ## 量化指标
@@ -28,7 +41,8 @@
 | 混合检索 (BM25+向量+RRF) | __% | __ms |
 | 混合 + BGE-Reranker | **__%** | __ms |
 
-测试集: `src/eval/testset.jsonl`(30+ 人工标注问答对)
+测试集: `src/eval/testset.jsonl` — 26 道问答对,**每题人工锚定真实手册页码**
+(构建方法见 DECISIONS.md #12);另有 `testset_refusal.jsonl` 5 道语料外问题测拒答。
 
 ## 快速开始
 
@@ -43,8 +57,10 @@ cp .env.example .env
 # 3. 启动 Milvus
 docker compose -f deploy/docker-compose.yml up -d
 
-# 4. 放几份设备手册 PDF 到 data/raw/, 然后入库
+# 4. 下载公开手册到 data/raw/ (西门子/三菱官方公开直链), 然后入库
 #    (Windows 终端建议先: set PYTHONUTF8=1, 避免 GBK 编码报错)
+curl -L -o data/raw/s71200_system_manual_zh.pdf "https://cache.industry.siemens.com/dl/files/622/91696622/att_42775/v1/s71200_system_manual_zh-CHS_zh-CHS.pdf"
+curl -L -o data/raw/fx3u_hardware_manual_zh.pdf "https://docs.rs-online.com/aed2/A700000008409570.pdf"
 python -m src.ingest
 
 # 5. 初始化故障码库 (Agent 工具数据源)
