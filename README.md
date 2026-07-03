@@ -44,6 +44,7 @@ cp .env.example .env
 docker compose -f deploy/docker-compose.yml up -d
 
 # 4. 放几份设备手册 PDF 到 data/raw/, 然后入库
+#    (Windows 终端建议先: set PYTHONUTF8=1, 避免 GBK 编码报错)
 python -m src.ingest
 
 # 5. 初始化故障码库 (Agent 工具数据源)
