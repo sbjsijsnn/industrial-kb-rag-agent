@@ -16,14 +16,29 @@ from sentence_transformers import CrossEncoder, SentenceTransformer
 from src import config
 
 
+def _local_or_remote(model_id: str) -> str:
+    """模型已有本地缓存时直接返回缓存路径, 彻底跳过 HuggingFace Hub 的联网检查。
+
+    背景: SentenceTransformer(模型名) 每次冷启动都会向 Hub 发 HEAD 请求校验文件,
+    镜像站不稳时直接加载失败 — 但模型明明在本地。snapshot_download(local_files_only=True)
+    纯本地解析缓存, 不发任何网络请求; 没有缓存时才回退到模型名(联网下载)。
+    注意不能用 HF_HUB_OFFLINE=1: 缓存中"本就不存在"的可选文件在离线模式下会抛错而非跳过。
+    """
+    try:
+        from huggingface_hub import snapshot_download
+        return snapshot_download(model_id, local_files_only=True)
+    except Exception:
+        return model_id
+
+
 @lru_cache(maxsize=1)
 def _encoder() -> SentenceTransformer:
-    return SentenceTransformer(config.EMBEDDING_MODEL)
+    return SentenceTransformer(_local_or_remote(config.EMBEDDING_MODEL))
 
 
 @lru_cache(maxsize=1)
 def _reranker() -> CrossEncoder:
-    return CrossEncoder(config.RERANKER_MODEL)
+    return CrossEncoder(_local_or_remote(config.RERANKER_MODEL))
 
 
 @lru_cache(maxsize=1)

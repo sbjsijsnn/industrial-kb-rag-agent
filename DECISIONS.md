@@ -98,6 +98,23 @@
 - 语料 ~7k chunk 量级, CPU batch 编码一次性 20-40 分钟,可接受(入库是低频操作)
 - 如果语料涨到 10 万 chunk 再装 CUDA 版 — **不为一次性任务提前优化**
 
+## 14. MCP Server: 知识库三工具服务化 (src/mcp_server.py)
+
+- 把 search_manual / query_fault_code / get_repair_history 用 MCP 协议暴露,
+  姊妹项目 industrial-ops-agents (多智能体运维系统) 作为 MCP 客户端消费
+- 传输 stdio: 客户端拉起本 server 子进程, JSON-RPC 走标准输入输出 —
+  **所以 server 的一切日志必须打到 stderr, stdout 是协议通道**
+- 启动即预热检索链路: 否则客户端首次调用要等 20-30s 模型加载, 易触发超时
+
+## 15. 模型加载: 本地缓存优先 (_local_or_remote)
+
+- 问题: SentenceTransformer(模型名) 冷启动时会向 HuggingFace Hub 发校验请求,
+  镜像站不稳时**明明模型在本地却加载失败**
+- 修复: snapshot_download(local_files_only=True) 纯本地解析缓存路径, 零网络请求;
+  无缓存时回退模型名联网下载
+- 弯路: 先试了 HF_HUB_OFFLINE=1 — 结果缓存中"本就不存在"的可选文件(modules.json)
+  在离线模式下抛错而非跳过, 更糟。**离线开关不是免费的加速器**
+
 ## 未来优化 (面试可聊的 roadmap)
 
 - [ ] 父子块检索: 小块检索、大块生成,兼顾精度和上下文
